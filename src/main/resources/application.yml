@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/anymind_db
+    username: anymind
+    password: anymind
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
