@@ -1,23 +1,42 @@
 package com.anymind.config;
 
+import com.anymind.model.entity.Payment;
 import com.anymind.model.entity.PaymentMethod;
 import com.anymind.repository.PaymentMethodRepository;
+import com.anymind.repository.PaymentRepository;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Component
 public class DataSeeder {
 
-    private final PaymentMethodRepository paymentMethodRepository;
+    private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
 
-    public DataSeeder(PaymentMethodRepository paymentMethodRepository) {
+    private final PaymentMethodRepository paymentMethodRepository;
+    private final PaymentRepository paymentRepository;
+
+    public DataSeeder(PaymentMethodRepository paymentMethodRepository,
+                      PaymentRepository paymentRepository) {
         this.paymentMethodRepository = paymentMethodRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     @PostConstruct
-    public void seedPaymentMethods() {
+    public void seed() {
+        seedPaymentMethods();
+        seedPayments();
+    }
+
+    private void seedPaymentMethods() {
         if (paymentMethodRepository.count() == 0) {
 
             PaymentMethod cash = new PaymentMethod();
@@ -109,9 +128,72 @@ public class DataSeeder {
                     linePay, paypay, points, grabPay, bankTransfer, cheque
             ));
 
-            System.out.println("✅ Payment methods seeded successfully.");
+            log.info("Payment methods seeded successfully");
         } else {
-            System.out.println("✅ Payment methods already exist. No seeding needed.");
+            log.info("Payment methods already exist. No seeding needed");
+        }
+    }
+
+    private void seedPayments() {
+        if (paymentRepository.count() == 0) {
+            List<Payment> seedPayments = new ArrayList<>();
+
+            LocalDateTime baseTime = LocalDateTime.of(2025, 4, 15, 0, 0);
+
+            for (int i = 0; i < 12; i++) {
+                Payment payment = new Payment();
+                payment.setCustomerId("demo-user-" + (11-i));
+
+                payment.setPrice(BigDecimal.valueOf(100 + i * 100));
+                payment.setFinalPrice(BigDecimal.valueOf(97 + i * 100));
+                payment.setPoints(1 + i * 5);
+
+                payment.setDatetime(Timestamp.valueOf(baseTime.plusHours(i)));
+                payment.setPaymentMethod("VISA");
+                seedPayments.add(payment);
+            }
+
+            String[] paymentMethods = {"VISA", "MASTERCARD", "AMEX", "PAYPAY"};
+            Random random = new Random();
+
+            for (int i = 0; i < 20; i++) {
+                Payment extraPayment = new Payment();
+
+                int hour = random.nextInt(12);
+                int minutes = random.nextInt(60);
+                int customerIndex = random.nextInt(20);
+
+                extraPayment.setCustomerId("customer-" + customerIndex);
+
+                int priceBase = 50 + random.nextInt(450);
+                extraPayment.setPrice(BigDecimal.valueOf(priceBase));
+
+                extraPayment.setFinalPrice(BigDecimal.valueOf(priceBase * 0.95));
+
+                extraPayment.setPoints(priceBase / 20);
+
+                extraPayment.setPaymentMethod(paymentMethods[random.nextInt(paymentMethods.length)]);
+
+                extraPayment.setDatetime(Timestamp.valueOf(baseTime.plusHours(hour).plusMinutes(minutes)));
+
+                seedPayments.add(extraPayment);
+            }
+
+            for (int i = 0; i < 5; i++) {
+                Payment nextDayPayment = new Payment();
+                nextDayPayment.setCustomerId("next-day-user-" + i);
+                nextDayPayment.setPrice(BigDecimal.valueOf(200 + i * 50));
+                nextDayPayment.setFinalPrice(BigDecimal.valueOf(190 + i * 50));
+                nextDayPayment.setPoints(10 + i * 2);
+                nextDayPayment.setDatetime(Timestamp.valueOf(baseTime.plusDays(1).plusHours(i)));
+                nextDayPayment.setPaymentMethod("VISA");
+                seedPayments.add(nextDayPayment);
+            }
+
+            paymentRepository.saveAll(seedPayments);
+            log.info("Payment data seeded successfully: {} records created", seedPayments.size());
+        } else {
+            log.info("Payments already exist. No seeding needed");
         }
     }
 }

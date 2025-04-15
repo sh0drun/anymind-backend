@@ -1,13 +1,5 @@
 scalar UUID
 
-type Query {
-    _dummy: String
-}
-
-type Mutation {
-    pay(input: PayInput!): PayResult
-}
-
 input PayInput {
     customerId: String!
     price: Float!
@@ -27,4 +19,23 @@ type PayResult {
     paymentId: UUID!
     finalPrice: Float!
     points: Int!
+}
+
+type SalesByHour {
+    datetime: String!
+    sales: Float!
+    points: Int!
+}
+
+input SalesQueryInput {
+    startDateTime: String!
+    endDateTime: String!
+}
+
+type Query {
+    sales(input: SalesQueryInput!): [SalesByHour!]!
+}
+
+type Mutation {
+    pay(input: PayInput!): PayResult
 }

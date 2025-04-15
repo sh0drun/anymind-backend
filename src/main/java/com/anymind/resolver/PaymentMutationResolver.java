@@ -1,4 +1,4 @@
-package com.anymind.controller;
+package com.anymind.resolver;
 
 import com.anymind.model.dto.PayInput;
 import com.anymind.model.dto.PayResult;
@@ -8,11 +8,11 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class PaymentController {
+public class PaymentMutationResolver {
 
     private final PaymentService paymentService;
 
-    public PaymentController(PaymentService paymentService) {
+    public PaymentMutationResolver(PaymentService paymentService) {
         this.paymentService = paymentService;
     }
 
