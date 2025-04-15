@@ -1,6 +1,5 @@
 package com.anymind.service;
 
-import com.anymind.exception.InvalidDateRangeException;
 import com.anymind.exception.PaymentProcessingException;
 import com.anymind.exception.PaymentValidationException;
 import com.anymind.model.dto.PayInput;
@@ -14,20 +13,17 @@ import com.anymind.util.ValidationUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -51,6 +47,7 @@ public class PaymentService {
         this.validator = validator;
     }
 
+    @Transactional
     public PayResult pay(PayInput input) {
         ValidationUtil.validateAndThrow(input, validator, PaymentValidationException::new);
 

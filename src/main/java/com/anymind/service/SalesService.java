@@ -1,23 +1,21 @@
 package com.anymind.service;
 
 import com.anymind.exception.InvalidDateRangeException;
-import com.anymind.exception.PaymentValidationException;
-import com.anymind.model.dto.PayInput;
 import com.anymind.model.dto.SalesByHour;
 import com.anymind.model.dto.SalesQueryInput;
 import com.anymind.model.entity.Payment;
 import com.anymind.repository.PaymentRepository;
 import com.anymind.util.ValidationUtil;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
