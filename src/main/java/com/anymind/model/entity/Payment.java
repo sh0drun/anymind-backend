@@ -30,8 +30,9 @@ public class Payment {
     @Column(nullable = false)
     private Integer points;
 
-    @Column(nullable = false)
-    private String paymentMethod;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "payment_method_id", nullable = false)
+    private PaymentMethod paymentMethod;
 
     @Column(nullable = false)
     private Timestamp datetime;

@@ -12,9 +12,8 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class DataSeeder {
@@ -135,6 +134,21 @@ public class DataSeeder {
     }
 
     private void seedPayments() {
+        List<PaymentMethod> allPaymentMethods = paymentMethodRepository.findAll();
+
+        if (allPaymentMethods.isEmpty()) {
+            log.warn("No payment methods found. Seeding payments aborted.");
+            return;
+        }
+
+        Map<String, PaymentMethod> paymentMethodMap = allPaymentMethods.stream()
+                .collect(Collectors.toMap(
+                        PaymentMethod::getPaymentMethod,
+                        paymentMethod -> paymentMethod
+                ));
+
+        PaymentMethod defaultPaymentMethod = allPaymentMethods.get(0);
+
         if (paymentRepository.count() == 0) {
             List<Payment> seedPayments = new ArrayList<>();
 
@@ -149,11 +163,12 @@ public class DataSeeder {
                 payment.setPoints(1 + i * 5);
 
                 payment.setDatetime(Timestamp.valueOf(baseTime.plusHours(i)));
-                payment.setPaymentMethod("VISA");
+
+                payment.setPaymentMethod(paymentMethodMap.getOrDefault("VISA", defaultPaymentMethod));
+
                 seedPayments.add(payment);
             }
 
-            String[] paymentMethods = {"VISA", "MASTERCARD", "AMEX", "PAYPAY"};
             Random random = new Random();
 
             for (int i = 0; i < 20; i++) {
@@ -172,7 +187,9 @@ public class DataSeeder {
 
                 extraPayment.setPoints(priceBase / 20);
 
-                extraPayment.setPaymentMethod(paymentMethods[random.nextInt(paymentMethods.length)]);
+                List<String> keysList = new ArrayList<>(paymentMethodMap.keySet());
+                String randomKey = keysList.get(random.nextInt(keysList.size()));
+                extraPayment.setPaymentMethod(paymentMethodMap.getOrDefault(randomKey, defaultPaymentMethod));
 
                 extraPayment.setDatetime(Timestamp.valueOf(baseTime.plusHours(hour).plusMinutes(minutes)));
 
@@ -186,7 +203,9 @@ public class DataSeeder {
                 nextDayPayment.setFinalPrice(BigDecimal.valueOf(190 + i * 50));
                 nextDayPayment.setPoints(10 + i * 2);
                 nextDayPayment.setDatetime(Timestamp.valueOf(baseTime.plusDays(1).plusHours(i)));
-                nextDayPayment.setPaymentMethod("VISA");
+
+                nextDayPayment.setPaymentMethod(paymentMethodMap.getOrDefault("VISA", defaultPaymentMethod));
+
                 seedPayments.add(nextDayPayment);
             }
 

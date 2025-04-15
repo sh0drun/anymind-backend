@@ -81,7 +81,7 @@ public class PaymentService {
         payment.setPrice(input.getPrice());
         payment.setFinalPrice(finalPrice);
         payment.setPoints(points);
-        payment.setPaymentMethod(input.getPaymentMethod());
+        payment.setPaymentMethod(paymentMethod);
         payment.setDatetime(new Timestamp(System.currentTimeMillis()));
 
         if (input.getAdditionalItems() != null && !input.getAdditionalItems().isEmpty()) {

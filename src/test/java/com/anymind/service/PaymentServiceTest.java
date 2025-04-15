@@ -69,11 +69,18 @@ class PaymentServiceTest {
         when(objectMapper.writeValueAsString(any()))
                 .thenReturn("{\"last4\":\"1234\"}");
 
+        PaymentMethod visa = new PaymentMethod();
+        visa.setPaymentMethod("VISA");
+        visa.setMinModifier(0.95f);
+        visa.setMaxModifier(1.0f);
+        visa.setPointRate(0.03f);
+        visa.setAdditionalRequiredFields("[\"last4\"]");
+
         Payment savedPayment = new Payment();
         savedPayment.setId(UUID.randomUUID());
         savedPayment.setFinalPrice(BigDecimal.valueOf(97.98));
         savedPayment.setPoints(2);
-        savedPayment.setPaymentMethod("VISA");
+        savedPayment.setPaymentMethod(visa);
         savedPayment.setCustomerId("customer123");
 
         when(paymentRepository.save(any())).thenReturn(savedPayment);
@@ -101,7 +108,7 @@ class PaymentServiceTest {
     }
 
     @Test
-    void pay_shouldFail_whenMissingRequiredField() throws Exception {
+    void pay_shouldFail_whenMissingRequiredField() {
         PaymentMethod visa = new PaymentMethod();
         visa.setPaymentMethod("VISA");
         visa.setAdditionalRequiredFields("[\"last4\"]");
