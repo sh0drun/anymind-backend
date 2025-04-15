@@ -5,6 +5,7 @@ import com.anymind.model.dto.SalesByHour;
 import com.anymind.model.dto.SalesQueryInput;
 import com.anymind.model.entity.Payment;
 import com.anymind.repository.PaymentRepository;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,11 +21,14 @@ import static org.mockito.Mockito.*;
 
 class SalesServiceTest {
 
+    @InjectMocks
+    private SalesService salesService;
+
     @Mock
     private PaymentRepository paymentRepository;
 
-    @InjectMocks
-    private SalesService salesService;
+    @Mock
+    private Validator validator;
 
     @BeforeEach
     void setUp() {

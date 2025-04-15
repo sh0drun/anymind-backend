@@ -10,6 +10,7 @@ import com.anymind.repository.PaymentRepository;
 import com.anymind.service.strategy.PriceModifierStrategy;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -36,6 +37,9 @@ class PaymentServiceTest {
 
     @Mock
     private ObjectMapper objectMapper;
+
+    @Mock
+    private Validator validator;
 
     @BeforeEach
     void setUp() {
