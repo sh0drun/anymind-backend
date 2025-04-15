@@ -1,10 +1,16 @@
 package com.anymind.service;
 
 import com.anymind.exception.InvalidDateRangeException;
+import com.anymind.exception.PaymentValidationException;
+import com.anymind.model.dto.PayInput;
 import com.anymind.model.dto.SalesByHour;
 import com.anymind.model.dto.SalesQueryInput;
 import com.anymind.model.entity.Payment;
 import com.anymind.repository.PaymentRepository;
+import com.anymind.util.ValidationUtil;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,11 +25,17 @@ public class SalesService {
 
     private final PaymentRepository paymentRepository;
 
-    public SalesService(PaymentRepository paymentRepository) {
+    private final Validator validator;
+
+    public SalesService(PaymentRepository paymentRepository,
+                        Validator validator) {
         this.paymentRepository = paymentRepository;
+        this.validator = validator;
     }
 
     public List<SalesByHour> getSalesBreakdown(SalesQueryInput input) {
+        ValidationUtil.validateAndThrow(input, validator, InvalidDateRangeException::new);
+
         LocalDateTime start;
         LocalDateTime end;
 

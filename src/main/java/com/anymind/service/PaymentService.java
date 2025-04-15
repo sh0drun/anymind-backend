@@ -1,5 +1,6 @@
 package com.anymind.service;
 
+import com.anymind.exception.InvalidDateRangeException;
 import com.anymind.exception.PaymentProcessingException;
 import com.anymind.exception.PaymentValidationException;
 import com.anymind.model.dto.PayInput;
@@ -9,11 +10,15 @@ import com.anymind.model.entity.PaymentMethod;
 import com.anymind.repository.PaymentMethodRepository;
 import com.anymind.repository.PaymentRepository;
 import com.anymind.service.strategy.PriceModifierStrategy;
+import com.anymind.util.ValidationUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -21,6 +26,8 @@ import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -29,19 +36,24 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PriceModifierStrategy priceModifierStrategy;
     private final ObjectMapper objectMapper;
+    private final Validator validator;
 
     private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
 
     public PaymentService(PaymentMethodRepository paymentMethodRepository,
                           PaymentRepository paymentRepository,
-                          PriceModifierStrategy priceModifierStrategy) {
+                          PriceModifierStrategy priceModifierStrategy,
+                          Validator validator) {
         this.paymentMethodRepository = paymentMethodRepository;
         this.paymentRepository = paymentRepository;
         this.priceModifierStrategy = priceModifierStrategy;
-        objectMapper = new ObjectMapper();
+        this.objectMapper = new ObjectMapper();
+        this.validator = validator;
     }
 
     public PayResult pay(PayInput input) {
+        ValidationUtil.validateAndThrow(input, validator, PaymentValidationException::new);
+
         log.info("Processing payment for customer: {}", input.getCustomerId());
 
         if (input.getPrice() == null || input.getPrice().compareTo(BigDecimal.ZERO) <= 0) {

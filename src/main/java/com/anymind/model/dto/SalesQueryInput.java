@@ -1,6 +1,8 @@
 package com.anymind.model.dto;
 
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +13,12 @@ import java.time.format.DateTimeFormatter;
 @Setter
 public class SalesQueryInput {
 
+    @NotNull(message = "startDateTime can't be null")
+    @NotBlank(message = "startDateTime can't be blank")
     private String startDateTime;
+
+    @NotNull(message = "endDateTime can't be null")
+    @NotBlank(message = "endDateTime can't be blank")
     private String endDateTime;
 
     public LocalDateTime getParsedStartDateTime() {

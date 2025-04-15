@@ -1,9 +1,9 @@
 scalar UUID
 
 input PayInput {
-    customerId: String!
-    price: Float!
-    paymentMethod: String!
+    customerId: String
+    price: Float
+    paymentMethod: String
     additionalItems: AdditionalItemsInput
 }
 
@@ -28,14 +28,14 @@ type SalesByHour {
 }
 
 input SalesQueryInput {
-    startDateTime: String!
-    endDateTime: String!
+    startDateTime: String
+    endDateTime: String
 }
 
 type Query {
-    sales(input: SalesQueryInput!): [SalesByHour!]!
+    sales(input: SalesQueryInput): [SalesByHour!]
 }
 
 type Mutation {
-    pay(input: PayInput!): PayResult
+    pay(input: PayInput): PayResult
 }
