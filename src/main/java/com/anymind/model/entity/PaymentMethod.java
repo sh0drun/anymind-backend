@@ -1,4 +1,4 @@
-package com.anymind.model;
+package com.anymind.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,0 +1,30 @@
+scalar UUID
+
+type Query {
+    _dummy: String
+}
+
+type Mutation {
+    pay(input: PayInput!): PayResult
+}
+
+input PayInput {
+    customerId: String!
+    price: Float!
+    paymentMethod: String!
+    additionalItems: AdditionalItemsInput
+}
+
+input AdditionalItemsInput {
+    last4: String
+    courier: String
+    bank: String
+    accountNumber: String
+    chequeNumber: String
+}
+
+type PayResult {
+    paymentId: UUID!
+    finalPrice: Float!
+    points: Int!
+}

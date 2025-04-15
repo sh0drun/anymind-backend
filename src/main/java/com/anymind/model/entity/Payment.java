@@ -1,11 +1,15 @@
-package com.anymind.model;
+package com.anymind.model.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "payments")
 public class Payment {

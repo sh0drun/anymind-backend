@@ -1,6 +1,6 @@
 package com.anymind.config;
 
-import com.anymind.model.PaymentMethod;
+import com.anymind.model.entity.PaymentMethod;
 import com.anymind.repository.PaymentMethodRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
